@@ -48,59 +48,40 @@ const App = () => {
   )
 }
 
-const List = (props) => {
+const List = ({ list }) => (
+  <ul>
+    {list.map((item) => (
+      <Item key={item.objectID} item={item} />
+    ))}
+  </ul>
+)
 
-  //console.log('list renders')
+const Item = ({ item }) => (
+  <li>
+    <span>
+      <a href={item.url}>{item.title}</a>
+    </span>
+    <span>{item.author}</span>
+    <span>{item.num_comments}</span>
+    <span>{item.points}</span>
+  </li>
+)
 
-  return (
-    <ul>
-      {
-        props.list.map((item) => (
-          <Item key={item.objectID} item={item} />
-        ))
-      }
-    </ul>
-  )
-}
+const Search = ({ search, onSearch }) => (
+  <div>
 
-const Item = (props) => {
-  return (
-    <li>
-      <span>
-        <a href={props.item.url}>{props.item.title}</a>
-      </span>
-      <span>
-        {props.item.author}
-      </span>
-      <span>
-        {props.item.num_comments}
-      </span>
-      <span>
-        {props.item.points}
-      </span>
-    </li>
-  )
-}
+    <label htmlFor="search">Search: </label>
 
-const Search = (props) => {
-  
-  const {search, onSearch} = props
+    <input
+      id="search"
+      type="text"
+      value={search}
+      onChange={onSearch}
+    />
 
-  return (
-    <div>
+  </div>
+)
 
-      <label htmlFor="search">Search: </label>
-
-      <input
-        id="search"
-        type="text"
-        value={search}
-        onChange={onSearch}
-      />
-
-    </div>
-  )
-}
 
 
 export default App
