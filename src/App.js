@@ -15,37 +15,49 @@ const useSemiPersistentState = (key, initialState) => {
 
 }
 
+const initialStories = [
+  {
+    title: 'React',
+    url: 'https://reactjs.org/',
+    author: 'Jordan Walke',
+    num_comments: 3,
+    points: 4,
+    objectID: 0,
+  },
+  {
+    title: 'Redux',
+    url: 'https://redux.js.org/',
+    author: 'Dan Abramov, Andrew Clark',
+    num_comments: 2,
+    points: 5,
+    objectID: 1,
+  }
+]
+
 const App = () => {
 
-  const stories = [
-    {
-      title: 'React',
-      url: 'https://reactjs.org/',
-      author: 'Jordan Walke',
-      num_comments: 3,
-      points: 4,
-      objectID: 0,
-    },
-    {
-      title: 'Redux',
-      url: 'https://redux.js.org/',
-      author: 'Dan Abramov, Andrew Clark',
-      num_comments: 2,
-      points: 5,
-      objectID: 1,
-    }
-  ]
-
   const [searchTerm, setSearchTerm] = useSemiPersistentState(
-    'search', 
+    'search',
     'React',
   )
+
+  const [stories, setStories] = React.useState(initialStories)
+
+  const handleRemoveStories = (item) => {
+
+    const newStories = stories.filter(
+      (story) => item.objectID !== story.objectID
+    )
+
+    setStories(newStories)
+
+  }
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value)
   }
 
-  const storiesFiltered = stories.filter((story) =>
+  const searchedStories = stories.filter((story) =>
     story.title.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
@@ -54,20 +66,26 @@ const App = () => {
 
       <h1>My hacker stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <InputWithLabel
+        id="search"
+        value={searchTerm}
+        //esto es un booleano
+        isFocused
+        onInputChange={handleSearch}
+      >
+        <strong>Search:</strong>
+      </InputWithLabel>
 
-      <hr />
-
-      <List list={storiesFiltered} />
+      <List list={searchedStories} onRemoveItem={handleRemoveStories} />
 
     </div>
   )
 }
 
-const List = ({ list }) => (
+const List = ({ list, onRemoveItem }) => (
   <ul>
     {list.map((item) => (
-      <Item key={item.objectID} item={item} />
+      <Item key={item.objectID} item={item} onRemoveItem={onRemoveItem} />
     ))}
   </ul>
 )
@@ -83,21 +101,42 @@ const Item = ({ item }) => (
   </li>
 )
 
-const Search = ({ search, onSearch }) => (
-  <div>
+const InputWithLabel = (
+  {
+    id,
+    value,
+    type = 'text',
+    onInputChange,
+    isFocused,
+    children,
+  }) => {
 
-    <label htmlFor="search">Search: </label>
+  const inputRef = React.useRef()
 
-    <input
-      id="search"
-      type="text"
-      value={search}
-      onChange={onSearch}
-    />
+  //este se llama despues de la asignacion del puntero
+  React.useEffect(() => {
+    if (isFocused && inputRef.current) {
+      console.log("alejandro")
+      inputRef.current.focus()
+    }
+  }, [isFocused])
 
-  </div>
-)
+  return (
+    //fragment
+    <>
+      <label htmlFor={id}>{children}</label>
+      &nbsp;
+      <input
+        ref={inputRef}
+        id={id}
+        type={type}
+        value={value}
+        onChange={onInputChange}
+      />
+    </>
+  )
 
+}
 
 
 export default App
