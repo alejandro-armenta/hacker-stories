@@ -2,8 +2,9 @@
 //client side rendering
 //server side rendering
 
-const App = () => {
+import React from "react"
 
+const App = () => {
 
   const stories = [
     {
@@ -24,16 +25,26 @@ const App = () => {
     },
   ]
 
+  const [searchTerm, setSearchTerm] = React.useState('')
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value)
+  }
+
+  const storiesFiltered = stories.filter(function(story){
+    return story.title.includes(searchTerm)
+  })
+
   return (
     <div>
 
       <h1>My hacker stories</h1>
 
-      <Search />
+      <Search onSearch={handleSearch} />
 
       <hr />
 
-      <List list={stories} />
+      <List list={storiesFiltered} />
 
     </div>
   )
@@ -41,37 +52,49 @@ const App = () => {
 
 
 
-const List = (props) => (
-  <ul>
-    {props.list.map((item) => (
-      <li key={item.objectID}>
-        <span>
-          <a href={item.url}>{item.title}</a>
-        </span>
-        <span>
-          {item.author}
-        </span>
-        <span>
-          {item.num_comments}
-        </span>
-        <span>
-          {item.points}
-        </span>
-      </li>
-    ))}
-  </ul>
-)
+const List = (props) => {
 
-const Search = () => {
-
-  const handleChange = (event) => {
-    console.log(event.target.value)
-  }
+  //console.log('list renders')
 
   return (
+    <ul>
+      {
+        props.list.map((item) => (
+          <Item key={item.objectID} item={item} />
+        ))
+      }
+    </ul>
+  )
+}
+
+const Item = (props) => {
+  return (
+    <li>
+      <span>
+        <a href={props.item.url}>{props.item.title}</a>
+      </span>
+      <span>
+        {props.item.author}
+      </span>
+      <span>
+        {props.item.num_comments}
+      </span>
+      <span>
+        {props.item.points}
+      </span>
+    </li>
+  )
+}
+
+const Search = (props) => {
+  return (
+
     <div>
+
       <label htmlFor="search">Search: </label>
-      <input id="search" type="text" onChange={handleChange} />
+
+      <input id="search" type="text" onChange={props.onSearch} />
+
     </div>
   );
 };
