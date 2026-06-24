@@ -34,6 +34,14 @@ const initialStories = [
   }
 ]
 
+//se espera y resuelve y lo guarda en esa estructura
+const getAsyncStories = () => new Promise(
+  (resolve) => setTimeout(
+    () => resolve({ data: { stories: initialStories } }), 
+    2000
+  )
+)
+
 const App = () => {
 
   const [searchTerm, setSearchTerm] = useSemiPersistentState(
@@ -41,16 +49,21 @@ const App = () => {
     'React',
   )
 
-  const [stories, setStories] = React.useState(initialStories)
+  const [stories, setStories] = React.useState([])
+
+  //will be called once first render y ya
+  React.useEffect(() => {
+    //esta esperando a que llegue y cuando llega se guarda en result y despues tu la guardas en una variable statuful stories
+    getAsyncStories().then(result => {
+      setStories(result.data.stories)
+    })
+  }, [])
 
   const handleRemoveStories = (item) => {
-
     const newStories = stories.filter(
       (story) => item.objectID !== story.objectID
     )
-
     setStories(newStories)
-
   }
 
   const handleSearch = (event) => {
@@ -91,11 +104,6 @@ const List = ({ list, onRemoveItem }) => (
 )
 
 const Item = ({ item, onRemoveItem }) => {
-
-  const handle = () => {
-    onRemoveItem(item)
-  }
-
   return (
     <li>
       <span>
@@ -104,6 +112,15 @@ const Item = ({ item, onRemoveItem }) => {
       <span>{item.author}</span>
       <span>{item.num_comments}</span>
       <span>{item.points}</span>
+
+      <span>
+        <button type="button" onClick={() => {
+          onRemoveItem(item)
+        }}>
+          Dismiss
+        </button>
+      </span>
+
     </li>
   )
 }
