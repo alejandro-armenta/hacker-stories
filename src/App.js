@@ -51,11 +51,18 @@ const App = () => {
 
   const [stories, setStories] = React.useState([])
 
-  //will be called once first render y ya
+  const [isLoading, setIsLoading] = React.useState(false)
+
   React.useEffect(() => {
-    //esta esperando a que llegue y cuando llega se guarda en result y despues tu la guardas en una variable statuful stories
+    
+    setIsLoading(true)
+
     getAsyncStories().then(result => {
+
       setStories(result.data.stories)
+
+      setIsLoading(false)
+
     })
   }, [])
 
@@ -89,6 +96,8 @@ const App = () => {
         <strong>Search:</strong>
       </InputWithLabel>
 
+      <hr />
+      
       <List list={searchedStories} onRemoveItem={handleRemoveStories} />
 
     </div>
